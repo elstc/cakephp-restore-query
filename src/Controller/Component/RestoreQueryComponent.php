@@ -4,7 +4,7 @@ namespace Elastic\RestoreQuery\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Event\Event;
-use Cake\Network\Request;
+use Cake\Http\ServerRequest;
 
 /**
  * Retaining and Restoring query strings
@@ -32,13 +32,13 @@ class RestoreQueryComponent extends Component
      */
     public function beforeFilter(Event $event)
     {
-        $controller = $event->subject();
+        $controller = $event->getSubject();
         $request = $controller->request;
 
         if ($this->hasRestoreQuery($request) && $this->isStoreAction($request)) {
-            $request = $this->restore($request);
-            if ($this->config('redirect')) {
-                $controller->redirect($request->here());
+            $controller->request = $this->restore($request);
+            if ($this->getConfig('redirect')) {
+                $controller->redirect($controller->request->getRequestTarget());
                 $event->stopPropagation();
             }
         }
@@ -52,7 +52,7 @@ class RestoreQueryComponent extends Component
      */
     public function beforeRender(Event $event)
     {
-        $request = $event->subject()->request;
+        $request = $event->getSubject()->request;
 
         if ($this->isStoreAction($request) && !$this->hasRestoreQuery($request)) {
             $this->store($request);
@@ -62,65 +62,69 @@ class RestoreQueryComponent extends Component
     /**
      * Check the action to save the query strings
      *
-     * @param Request $request a current request object.
+     * @param ServerRequest $request a current request object.
      * @return bool
      */
-    protected function isStoreAction(Request $request)
+    protected function isStoreAction(ServerRequest $request)
     {
-        return in_array($request->param('action'), $this->config('actions'));
+        return in_array($request->getParam('action'), $this->getConfig('actions'));
     }
 
     /**
      * Whether the query string contains a restore key
      *
-     * @param Request $request a current request object.
+     * @param ServerRequest $request a current request object.
      * @return bool
      */
-    protected function hasRestoreQuery(Request $request)
+    protected function hasRestoreQuery(ServerRequest $request)
     {
-        return (bool)$request->query($this->config('restoreKey'));
+        return (bool)$request->getQuery($this->getConfig('restoreKey'));
     }
 
     /**
      * Restore query string from session
      *
-     * @param Request $request a current request object.
-     * @return Request
+     * @param ServerRequest $request a current request object.
+     * @return ServerRequest
      */
-    public function restore(Request $request)
+    public function restore(ServerRequest $request)
     {
-        $request->query = $request->session()->read($this->getSessionKey($request));
+        $query = $request->session()->read($this->getSessionKey($request));
+        $uri = $request->getUri()->withQuery(http_build_query($query));
 
-        return $request;
+        return $request
+            ->withRequestTarget(null)
+            ->withUri($uri)
+            ->withQueryParams($query);
     }
 
     /**
      * Store query string to session
      *
-     * @param Request $request a current request object.
+     * @param ServerRequest $request a current request object.
      * @return void
      */
-    public function store(Request $request)
+    public function store(ServerRequest $request)
     {
         $key = $this->getSessionKey($request);
         $request->session()->delete($key);
-        $request->session()->write($key, $request->query);
+        $request->session()->write($key, $request->getQuery());
     }
 
     /**
      * get session key from request
      *
-     * @param Request $request a current request object.
+     * @param ServerRequest $request a current request object.
      * @return string
      */
-    protected function getSessionKey(Request $request)
+    protected function getSessionKey(ServerRequest $request)
     {
-        $plugin = $request->param('plugin');
-        $prefix = $request->param('prefix');
-        $controller = $request->param('controller');
-        $action = $request->param('action');
+        $plugin = $request->getParam('plugin');
+        $prefix = $request->getParam('prefix');
+        $controller = $request->getParam('controller');
+        $action = $request->getParam('action');
 
-        $keys = [$this->config('sessionKey')];
+        $keys = [$this->getConfig('sessionKey')];
         $keys[] = !$plugin ? 'app' : 'plugin';
         if ($plugin) {
             $keys[] = $plugin;

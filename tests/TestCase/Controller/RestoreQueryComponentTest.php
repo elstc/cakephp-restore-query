@@ -5,7 +5,7 @@ namespace Elastic\RestoreQuery\Test\TestCase\Controller\Component;
 use Cake\Controller\ComponentRegistry;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
-use Cake\Network\Request;
+use Cake\Http\ServerRequest;
 use Cake\Network\Response;
 use Cake\TestSuite\TestCase;
 use Elastic\RestoreQuery\Controller\Component\RestoreQueryComponent;
@@ -54,7 +54,7 @@ class RestoreQueryComponentTest extends TestCase
      */
     public function testStore()
     {
-        $request = new Request([
+        $request = new ServerRequest([
             'params' => [
                 'plugin' => null,
                 'prefix' => null,
@@ -86,7 +86,7 @@ class RestoreQueryComponentTest extends TestCase
      */
     public function testStoreWithPlugin()
     {
-        $request = new Request([
+        $request = new ServerRequest([
             'params' => [
                 'plugin' => 'Users',
                 'prefix' => null,
@@ -118,7 +118,7 @@ class RestoreQueryComponentTest extends TestCase
      */
     public function testStoreWithPrefix()
     {
-        $request = new Request([
+        $request = new ServerRequest([
             'params' => [
                 'plugin' => null,
                 'prefix' => 'Manager',
@@ -150,7 +150,7 @@ class RestoreQueryComponentTest extends TestCase
      */
     public function testStoreWithPluginAndPrefix()
     {
-        $request = new Request([
+        $request = new ServerRequest([
             'params' => [
                 'plugin' => 'Awesome',
                 'prefix' => 'Manager',
@@ -182,7 +182,7 @@ class RestoreQueryComponentTest extends TestCase
      */
     public function testRestore()
     {
-        $request = new Request([
+        $request = new ServerRequest([
             'params' => [
                 'plugin' => null,
                 'prefix' => null,
@@ -207,7 +207,7 @@ class RestoreQueryComponentTest extends TestCase
             'sort' => 'created_at',
             'direction' => 'desc',
             'limit' => 25,
-        ], $modifiedRequest->query);
+        ], $modifiedRequest->getQuery());
     }
 
     /**
@@ -217,7 +217,7 @@ class RestoreQueryComponentTest extends TestCase
      */
     public function testBeforeRender()
     {
-        $request = new Request([
+        $request = new ServerRequest([
             'params' => [
                 'plugin' => null,
                 'prefix' => null,
@@ -250,7 +250,7 @@ class RestoreQueryComponentTest extends TestCase
      */
     public function testBeforeFilter()
     {
-        $request = new Request([
+        $request = new ServerRequest([
             'params' => [
                 'plugin' => null,
                 'prefix' => null,
@@ -271,9 +271,9 @@ class RestoreQueryComponentTest extends TestCase
         $event = new Event('Controller.beforeRender', new Controller($request, $response));
 
         $this->RestoreQuery->beforeFilter($event);
-        $modifiedRequest = $event->subject()->request;
-        /* @var $modifiedResponse Request */
-        $modifiedResponse = $event->subject()->response;
+        $modifiedRequest = $event->getSubject()->request;
+        /* @var $modifiedResponse ServerRequest */
+        $modifiedResponse = $event->getSubject()->response;
         /* @var $modifiedResponse Response */
 
         $this->assertTrue($event->isStopped(), 'Stop event when redirecting');
@@ -283,9 +283,9 @@ class RestoreQueryComponentTest extends TestCase
             'sort' => 'created_at',
             'direction' => 'desc',
             'limit' => 25,
-        ], $modifiedRequest->query);
-        $this->assertSame(302, $modifiedResponse->statusCode());
-        $this->assertStringEndsWith('/?page=2&sort=created_at&direction=desc&limit=25', $modifiedResponse->location());
+        ], $modifiedRequest->getQuery());
+        $this->assertSame(302, $modifiedResponse->getStatusCode());
+        $this->assertStringEndsWith('/?page=2&sort=created_at&direction=desc&limit=25', $modifiedResponse->getHeaderLine('Location'));
     }
 
     /**
@@ -295,9 +295,9 @@ class RestoreQueryComponentTest extends TestCase
      */
     public function testBeforeFilterWithoutRedirect()
     {
-        $this->RestoreQuery->config('redirect', false);
+        $this->RestoreQuery->setConfig('redirect', false);
 
-        $request = new Request([
+        $request = new ServerRequest([
             'params' => [
                 'plugin' => null,
                 'prefix' => null,
@@ -318,9 +318,9 @@ class RestoreQueryComponentTest extends TestCase
         $event = new Event('Controller.beforeRender', new Controller($request, $response));
 
         $this->RestoreQuery->beforeFilter($event);
-        $modifiedRequest = $event->subject()->request;
-        /* @var $modifiedResponse Request */
-        $modifiedResponse = $event->subject()->response;
+        $modifiedRequest = $event->getSubject()->request;
+        /* @var $modifiedResponse ServerRequest */
+        $modifiedResponse = $event->getSubject()->response;
         /* @var $modifiedResponse Response */
 
         $this->assertFalse($event->isStopped(), 'does not redirect, it does not stop');
@@ -330,7 +330,7 @@ class RestoreQueryComponentTest extends TestCase
             'sort' => 'created_at',
             'direction' => 'desc',
             'limit' => 25,
-        ], $modifiedRequest->query);
-        $this->assertSame(200, $modifiedResponse->statusCode(), 'Response remains as default');
+        ], $modifiedRequest->getQuery());
+        $this->assertSame(200, $modifiedResponse->getStatusCode(), 'Response remains as default');
     }
 }
