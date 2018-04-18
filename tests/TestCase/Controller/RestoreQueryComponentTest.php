@@ -76,7 +76,7 @@ class RestoreQueryComponentTest extends TestCase
             'sort' => 'created_at',
             'direction' => 'desc',
             'limit' => 25,
-        ], $request->session()->read('StoredQuerystring.app.Users.index'));
+        ], $request->getSession()->read('StoredQuerystring.app.Users.index'));
     }
 
     /**
@@ -108,7 +108,7 @@ class RestoreQueryComponentTest extends TestCase
             'sort' => 'created_at',
             'direction' => 'desc',
             'limit' => 25,
-        ], $request->session()->read('StoredQuerystring.plugin.Users.Authors.index'));
+        ], $request->getSession()->read('StoredQuerystring.plugin.Users.Authors.index'));
     }
 
     /**
@@ -140,7 +140,7 @@ class RestoreQueryComponentTest extends TestCase
             'sort' => 'created_at',
             'direction' => 'desc',
             'limit' => 25,
-        ], $request->session()->read('StoredQuerystring.app.Manager.Posts.index'));
+        ], $request->getSession()->read('StoredQuerystring.app.Manager.Posts.index'));
     }
 
     /**
@@ -172,7 +172,7 @@ class RestoreQueryComponentTest extends TestCase
             'sort' => 'created_at',
             'direction' => 'desc',
             'limit' => 25,
-        ], $request->session()->read('StoredQuerystring.plugin.Awesome.Manager.Posts.index'));
+        ], $request->getSession()->read('StoredQuerystring.plugin.Awesome.Manager.Posts.index'));
     }
 
     /**
@@ -193,7 +193,7 @@ class RestoreQueryComponentTest extends TestCase
                 '_restore' => '1',
             ],
         ]);
-        $request->session()->write('StoredQuerystring.app.Users.index', [
+        $request->getSession()->write('StoredQuerystring.app.Users.index', [
             'page' => 2,
             'sort' => 'created_at',
             'direction' => 'desc',
@@ -240,7 +240,7 @@ class RestoreQueryComponentTest extends TestCase
             'sort' => 'created_at',
             'direction' => 'desc',
             'limit' => 25,
-        ], $request->session()->read('StoredQuerystring.app.Users.index'));
+        ], $request->getSession()->read('StoredQuerystring.app.Users.index'));
     }
 
     /**
@@ -261,7 +261,7 @@ class RestoreQueryComponentTest extends TestCase
                 '_restore' => '1',
             ],
         ]);
-        $request->session()->write('StoredQuerystring.app.Users.index', [
+        $request->getSession()->write('StoredQuerystring.app.Users.index', [
             'page' => 2,
             'sort' => 'created_at',
             'direction' => 'desc',
@@ -308,7 +308,7 @@ class RestoreQueryComponentTest extends TestCase
                 '_restore' => '1',
             ],
         ]);
-        $request->session()->write('StoredQuerystring.app.Users.index', [
+        $request->getSession()->write('StoredQuerystring.app.Users.index', [
             'page' => 2,
             'sort' => 'created_at',
             'direction' => 'desc',

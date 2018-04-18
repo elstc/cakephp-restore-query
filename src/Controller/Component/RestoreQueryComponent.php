@@ -89,7 +89,7 @@ class RestoreQueryComponent extends Component
      */
     public function restore(ServerRequest $request)
     {
-        $query = $request->session()->read($this->getSessionKey($request));
+        $query = $request->getSession()->read($this->getSessionKey($request));
         $uri = $request->getUri()->withQuery(http_build_query($query));
 
         return $request
@@ -107,8 +107,8 @@ class RestoreQueryComponent extends Component
     public function store(ServerRequest $request)
     {
         $key = $this->getSessionKey($request);
-        $request->session()->delete($key);
-        $request->session()->write($key, $request->getQuery());
+        $request->getSession()->delete($key);
+        $request->getSession()->write($key, $request->getQuery());
     }
 
     /**
