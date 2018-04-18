@@ -28,6 +28,7 @@ class RestoreQueryComponent extends Component
      * Restore query and redirect
      *
      * @param Event $event a Event object.
+     * @return void
      */
     public function beforeFilter(Event $event)
     {
@@ -97,6 +98,7 @@ class RestoreQueryComponent extends Component
      * Store query string to session
      *
      * @param Request $request a current request object.
+     * @return void
      */
     public function store(Request $request)
     {
