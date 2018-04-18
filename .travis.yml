@@ -11,6 +11,7 @@ sudo: false
 env:
   matrix:
     - CAKE_VERSION='3.2.*' DB=mysql db_dsn='mysql://root@0.0.0.0/cakephp_test'
+    - CAKE_VERSION='3.3.*' DB=mysql db_dsn='mysql://root@0.0.0.0/cakephp_test'
   global:
     - DEFAULT=1
 
