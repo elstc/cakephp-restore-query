@@ -38,7 +38,7 @@ class RestoreQueryComponent extends Component
         if ($this->hasRestoreQuery($request) && $this->isStoreAction($request)) {
             $request = $this->restore($request);
             if ($this->config('redirect')) {
-                $controller->redirect($request->here());
+                $event->result = $controller->redirect($request->here());
                 $event->stopPropagation();
             }
         }
